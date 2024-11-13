@@ -1,7 +1,9 @@
 # Self-Hosted Open Source Software (Version 0.6)
 
-# To do:
-# - Wazuh
+## To do:
+- Wazuh
+
+---
 
 A curated list of valuable open-source software that can be self-hosted. This repository provides categories, descriptions, links, and examples to help you get started.
 
