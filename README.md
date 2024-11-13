@@ -1,6 +1,6 @@
-# Awesome Self-Hosted Open Source Software (Version 0.3)
+# Self-Hosted Open Source Software (Version 0.6)
 
-A curated list of valuable open-source software that can be self-hosted using Docker Compose. This repository provides categories, descriptions, links, and examples to help you get started.
+A curated list of valuable open-source software that can be self-hosted. This repository provides categories, descriptions, links, and examples to help you get started.
 
 ## Table of Contents
 
@@ -13,15 +13,22 @@ A curated list of valuable open-source software that can be self-hosted using Do
   - [Uptime Kuma](#uptime-kuma)
   - [GitLab](#gitlab)
   - [Nginx Proxy Manager](#nginx-proxy-manager)
+  - [Nginx](#nginx)
+  - [Apache HTTP Server](#apache-http-server)
+  - [Kasm Workspaces](#kasm-workspaces)
+  - [Gluetun VPN](#gluetun-vpn)
   - [Home Assistant](#home-assistant)
   - [Invoice Ninja](#invoice-ninja)
   - [AdGuard Home](#adguard-home)
   - [Vaultwarden](#vaultwarden)
+  - [Mailu](#mailu)
   - [WireGuard UI](#wireguard-ui)
   - [Headscale](#headscale)
   - [Simple URL Shortener](#simple-url-shortener)
   - [Jitsi Meet](#jitsi-meet)
   - [Matrix Server (Synapse) and Element Client](#matrix-server-synapse-and-element-client)
+  - [FreeTAKServer](#freetakserver)
+  - [LLDAP](#lldap)
   - [Keycloak](#keycloak)
   - [Coolify](#coolify)
   - [n8n](#n8n)
@@ -39,7 +46,16 @@ A curated list of valuable open-source software that can be self-hosted using Do
   - [Ansible](#ansible)
   - [Docker & Docker Compose](#docker--docker-compose)
   - [WireGuard](#wireguard)
+- [Operating Systems](#operating-systems)
+  - [Proxmox VE](#proxmox-ve)
+  - [OPNsense](#opnsense)
+  - [Raspberry Pi OS](#raspberry-pi-os)
+  - [Kali Linux](#kali-linux)
+  - [Security Onion](#security-onion)
 - [Additional Resources](#additional-resources)
+  - [Awesome FOSS](#awesome-foss)
+  - [Awesome Self-Hosted](#awesome-self-hosted)
+  - [Ansible-NAS](#ansible-nas)
 
 ---
 
@@ -51,7 +67,7 @@ A curated list of valuable open-source software that can be self-hosted using Do
 
 **Link:** [Amnezia VPN](https://amnezia.org/)
 
-**Note:** Amnezia VPN currently does not provide an official Docker image. For Docker-based VPN solutions, consider alternatives like [OpenVPN](https://github.com/kylemanna/docker-openvpn) or [WireGuard](https://www.wireguard.com/).
+**Note:** Amnezia VPN currently does not provide an official Docker image. For Docker-based VPN solutions, consider alternatives like [OpenVPN](https://github.com/kylemanna/docker-openvpn) or [WireGuard](#wireguard).
 
 ---
 
@@ -280,6 +296,148 @@ Access the admin interface at `http://localhost:81`. Default credentials are `ad
 
 ---
 
+### Nginx
+
+**Description:** Nginx is a high-performance HTTP server and reverse proxy, as well as an IMAP/POP3 proxy server. It's known for its stability, rich feature set, simple configuration, and low resource consumption.
+
+**Link:** [Nginx](https://www.nginx.com/)
+
+**Docker Compose Example:**
+
+```yaml
+version: '3'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - './nginx.conf:/etc/nginx/nginx.conf:ro'
+      - './html:/usr/share/nginx/html:ro'
+      - './certs:/etc/nginx/certs:ro'
+    restart: unless-stopped
+```
+
+**Usage:**
+
+- Place your `nginx.conf` configuration file in the current directory.
+- Serve static files by placing them in the `html` directory.
+- SSL certificates can be placed in the `certs` directory.
+
+---
+
+### Apache HTTP Server
+
+**Description:** Apache HTTP Server is a free and open-source cross-platform web server software. It is highly configurable and extensible with third-party modules, providing a robust and flexible web server for modern web applications.
+
+**Link:** [Apache HTTP Server](https://httpd.apache.org/)
+
+**Docker Compose Example:**
+
+```yaml
+version: '3'
+
+services:
+  apache:
+    image: httpd:latest
+    container_name: apache
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - './httpd.conf:/usr/local/apache2/conf/httpd.conf:ro'
+      - './htdocs:/usr/local/apache2/htdocs:ro'
+      - './certs:/usr/local/apache2/conf/certs:ro'
+    restart: unless-stopped
+```
+
+**Usage:**
+
+- Place your `httpd.conf` configuration file in the current directory.
+- Serve static files by placing them in the `htdocs` directory.
+- SSL certificates can be placed in the `certs` directory.
+
+---
+
+### Kasm Workspaces
+
+**Description:** Kasm Workspaces is a container streaming platform for delivering browser, desktop, and application workloads to the web browser. It provides a secure and scalable way to stream Linux applications and desktops to end-users without the need for heavy client software. Kasm uses Docker and Kubernetes to deploy and manage containerized environments.
+
+**Link:** [Kasm Workspaces](https://www.kasmweb.com/)
+
+**Docker Compose Example:**
+
+Due to the complexity of Kasm's setup, it's recommended to use the official installation script. However, here's a basic example:
+
+```yaml
+version: '3'
+
+services:
+  kasm:
+    image: kasmweb/kasm:latest
+    container_name: kasm
+    ports:
+      - '443:443'
+    volumes:
+      - './data:/opt/kasm'
+    environment:
+      - KASM_PUBLIC_HOSTNAME=yourdomain.com
+    restart: unless-stopped
+```
+
+**Usage:**
+
+Access Kasm Workspaces at `https://localhost` and log in with the default credentials (admin@kasm.local / kasm2020). Be sure to change the default password immediately.
+
+---
+
+### Gluetun VPN
+
+**Description:** Gluetun is a light-weight VPN client in a Docker container, which connects to various VPN providers and acts as a proxy server. It provides DNS over TLS, firewall, killswitch, and supports OpenVPN and WireGuard protocols.
+
+**Link:** [Gluetun VPN](https://github.com/qdm12/gluetun)
+
+**Docker Compose Example:**
+
+```yaml
+version: '3'
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    ports:
+      - '8888:8888/tcp'  # HTTP Proxy
+      - '8388:8388/tcp'  # Shadowsocks
+      - '8388:8388/udp'
+      - '9091:9091'      # Example service port (Transmission, etc.)
+    volumes:
+      - './gluetun:/gluetun'
+    environment:
+      - VPN_SERVICE_PROVIDER=provider_name  # e.g., mullvad, nordvpn, etc.
+      - VPN_TYPE=openvpn  # or wireguard
+      - OPENVPN_USER=your_vpn_username
+      - OPENVPN_PASSWORD=your_vpn_password
+      - SERVER_CITIES=city1,city2
+      - FIREWALL_VPN_INPUT_PORTS=9091
+    restart: unless-stopped
+```
+
+**Usage:**
+
+- Replace `provider_name` with your VPN provider.
+- Configure your VPN credentials.
+- Any services you run that need to route traffic through the VPN can be configured to use the Gluetun network stack.
+
+---
+
 ### Home Assistant
 
 **Description:** Home Assistant is an open-source platform for home automation that puts local control and privacy first. It supports a wide range of devices and services, allowing you to automate and control your smart home from a single interface.
@@ -420,6 +578,24 @@ services:
 **Usage:**
 
 Access Vaultwarden at `http://localhost` and use the Bitwarden clients to connect to your server.
+
+---
+
+### Mailu
+
+**Description:** Mailu is a simple yet full-featured mail server as a set of Docker images. It includes features like SMTP, IMAP, Webmail, anti-spam, and virus scanning. Mailu is designed to be easy to deploy, maintain, and upgrade, making it a great choice for self-hosting your email.
+
+**Link:** [Mailu](https://mailu.io/1.9/)
+
+**Docker Compose Example:**
+
+Due to the complexity of a mail server setup, it's recommended to use the official Mailu deployment repository:
+
+- **Repository:** [Mailu/Mailu](https://github.com/Mailu/Mailu)
+
+**Usage:**
+
+Clone the repository and follow the instructions in the README to configure and deploy Mailu.
 
 ---
 
@@ -586,6 +762,69 @@ services:
 - Access Element at `http://localhost:8080`.
 
 Configure Element to connect to your Synapse server.
+
+---
+
+### FreeTAKServer
+
+**Description:** FreeTAKServer is an open-source implementation of the Tactical Assault Kit (TAK) server, designed for real-time geospatial collaboration. It's used by military, law enforcement, and emergency services to share location data, messaging, and more.
+
+**Link:** [FreeTAKServer](https://github.com/FreeTAKTeam/FreeTAKServer)
+
+**Docker Compose Example:**
+
+```yaml
+version: '3'
+
+services:
+  freetakserver:
+    image: freetakteam/freetakserver:latest
+    container_name: freetakserver
+    ports:
+      - '8087:8087'  # Web GUI
+      - '8089:8089'  # Data port
+    volumes:
+      - './config:/app/FreeTAKServer/FTSConfig'
+    restart: unless-stopped
+```
+
+**Usage:**
+
+- Access the Web GUI at `http://localhost:8087`.
+- Configure clients to connect to the server on port `8089`.
+
+---
+
+### LLDAP
+
+**Description:** LLDAP is a light LDAP implementation built on top of SQLite. It aims to be a simple, self-contained, and easy-to-use LDAP server suitable for small setups and development purposes.
+
+**Link:** [LLDAP](https://github.com/nitnelave/lldap)
+
+**Docker Compose Example:**
+
+```yaml
+version: '3'
+
+services:
+  lldap:
+    image: nitnelave/lldap:latest
+    container_name: lldap
+    ports:
+      - '1389:1389'  # LDAP port
+      - '8000:8000'  # Admin UI
+    volumes:
+      - './config:/etc/lldap'
+      - './data:/var/lib/lldap'
+    environment:
+      - CONFIG_FILE=/etc/lldap/lldap.toml
+    restart: unless-stopped
+```
+
+**Usage:**
+
+- Access the Admin UI at `http://localhost:8000`.
+- Configure your applications to use LDAP at `ldap://localhost:1389`.
 
 ---
 
@@ -1042,10 +1281,27 @@ sudo apt install ansible
 **Installation:**
 
 ```bash
-# Install Docker 
-curl https://get.docker.com -o /tmp/docker.sh
-nano /tmp/docker.sh
-bash /tmp/docker.sh
+# Install Docker (on Ubuntu)
+sudo apt update
+sudo apt install \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
+  https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+
+sudo apt update
+sudo apt install docker-ce docker-ce-cli containerd.io
+
+# Install Docker Compose
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.16.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
 ```
 
 ---
@@ -1087,16 +1343,89 @@ sudo wg-quick up wg0
 
 ---
 
+## Operating Systems
+
+### Proxmox VE
+
+**Description:** Proxmox Virtual Environment (VE) is an open-source server virtualization management platform. It combines KVM hypervisor and LXC containers, software-defined storage, and networking functionality on a single platform. Proxmox VE allows you to easily manage VMs and containers, high availability for clusters, and integrated disaster recovery tools.
+
+**Link:** [Proxmox VE](https://www.proxmox.com/en/proxmox-ve)
+
+---
+
+### OPNsense
+
+**Description:** OPNsense is an open-source, easy-to-use, and easy-to-build FreeBSD-based firewall and routing platform. It includes most of the features available in expensive commercial firewalls, and more in many cases.
+
+**Link:** [OPNsense](https://opnsense.org/)
+
+---
+
+### Raspberry Pi OS
+
+**Description:** Raspberry Pi OS is the official operating system for Raspberry Pi devices. It's a Debian-based Linux distribution optimized for the Raspberry Pi hardware, providing a lightweight and user-friendly environment for education, programming, and IoT projects.
+
+**Link:** [Raspberry Pi OS](https://www.raspberrypi.org/software/operating-systems/)
+
+---
+
+### Kali Linux
+
+**Description:** Kali Linux is a Debian-based Linux distribution aimed at advanced Penetration Testing and Security Auditing. It comes pre-installed with numerous tools for information security tasks, such as penetration testing, security research, computer forensics, and reverse engineering.
+
+**Link:** [Kali Linux](https://www.kali.org/)
+
+---
+
+### Security Onion
+
+**Description:** Security Onion is a free and open-source Linux distribution for threat hunting, enterprise security monitoring, and log management. It includes tools like Elasticsearch, Logstash, Kibana, Suricata, Zeek, and Wazuh, providing a comprehensive platform for security operations.
+
+**Link:** [Security Onion](https://securityonionsolutions.com/)
+
+---
+
 ## Additional Resources
 
-- **Awesome Self-Hosted:** A list of Free Software network services and web applications which can be hosted on your own servers. It covers a wide range of categories and is a great resource for finding new self-hosted solutions.
+### Awesome FOSS
 
-  **Link:** [awesome-selfhosted/awesome-selfhosted](https://github.com/awesome-selfhosted/awesome-selfhosted)
+A curated list of awesome Free and Open-Source Software (FOSS) projects.
 
-- **Ansible-NAS:** A comprehensive Ansible playbook for configuring a home network attached storage (NAS) server. It automates the setup of various services like media servers, file sharing, and backup solutions.
+**Link:** [awesome-foss/awesome-foss](https://github.com/awesome-foss/awesome-foss)
 
-  **Link:** [DaveStephens/ansible-nas](https://github.com/DaveStephens/ansible-nas)
+**Categories Include:**
+
+- **Operating Systems**
+- **Programming Languages**
+- **Databases**
+- **Web Servers**
+- **Desktop Environments**
+- **Security Tools**
+- **Media Players**
+- **Office Suites**
+- **Graphic Design**
+- **And more...**
+
+This repository is a great resource to discover new open-source projects across various domains.
+
+---
+
+### Awesome Self-Hosted
+
+A list of Free Software network services and web applications which can be hosted on your own servers. It covers a wide range of categories and is a great resource for finding new self-hosted solutions.
+
+**Link:** [awesome-selfhosted/awesome-selfhosted](https://github.com/awesome-selfhosted/awesome-selfhosted)
+
+---
+
+### Ansible-NAS
+
+A comprehensive Ansible playbook for configuring a home network attached storage (NAS) server. It automates the setup of various services like media servers, file sharing, and backup solutions.
+
+**Link:** [DaveStephens/ansible-nas](https://github.com/DaveStephens/ansible-nas)
 
 ---
 
 This document provides a starting point for setting up and deploying various open-source applications using Docker Compose. For detailed configurations, security considerations, and advanced setups, please refer to the official documentation of each application.
+
+---
